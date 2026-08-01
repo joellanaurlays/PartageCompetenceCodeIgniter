@@ -52,10 +52,25 @@ class PublicationController extends BaseController
     }
 
     // POST /api/publications
-    public function create()
+    public function createForUser($userId = null)
     {
-        $data = $this->request->getJSON(true);
-        $data['date'] = date('Y-m-d');
+        if ($userId === null) {
+            return $this->failValidationErrors('ID utilisateur requis');
+        }
+        $data = [
+            'contenu' => (string) $this->request->getPost('contenu'),
+            'utilisateur_id' => $userId,
+            'date' => date('Y-m-d'),
+        ];
+        $photo = $this->request->getFile('photo_publier');
+        if ($photo !== null && $photo->isValid()) {
+            $name = $photo->getRandomName();
+            if (!is_dir(FCPATH . 'uploads/publications')) {
+                mkdir(FCPATH . 'uploads/publications', 0775, true);
+            }
+            $photo->move(FCPATH . 'uploads/publications', $name);
+            $data['photo_publier'] = '/uploads/publications/' . $name;
+        }
         
         if (!$this->publicationModel->save($data)) {
             return $this->failValidationErrors($this->publicationModel->errors());
@@ -72,8 +87,17 @@ class PublicationController extends BaseController
             return $this->failValidationErrors('ID publication requis');
         }
 
-        $data = $this->request->getJSON(true);
+        $data = ['contenu' => (string) $this->request->getPost('contenu')];
         $data['id'] = $id;
+        $photo = $this->request->getFile('photo_publier');
+        if ($photo !== null && $photo->isValid()) {
+            $name = $photo->getRandomName();
+            if (!is_dir(FCPATH . 'uploads/publications')) {
+                mkdir(FCPATH . 'uploads/publications', 0775, true);
+            }
+            $photo->move(FCPATH . 'uploads/publications', $name);
+            $data['photo_publier'] = '/uploads/publications/' . $name;
+        }
 
         if (!$this->publicationModel->find($id)) {
             return $this->failNotFound('Publication non trouvée');
@@ -85,6 +109,18 @@ class PublicationController extends BaseController
 
         $publication = $this->publicationModel->find($id);
         return $this->respond($publication);
+    }
+
+    public function byUser($userId = null)
+    {
+        if ($userId === null) {
+            return $this->failValidationErrors('ID utilisateur requis');
+        }
+        $publications = $this->publicationModel->getAllWithUser();
+        return $this->respond(array_values(array_filter(
+            $publications,
+            static fn (array $publication): bool => (int) $publication['utilisateur_id'] === (int) $userId
+        )));
     }
 
     // DELETE /api/publications/{id}

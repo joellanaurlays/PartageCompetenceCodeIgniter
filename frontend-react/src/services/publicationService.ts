@@ -9,12 +9,12 @@ export const publicationService = {
 
     create: (userId: number, formData: FormData) =>
         api.post(`/publications/creer/${userId}`, formData, {
-            headers: {'Content-Type': 'multipart/formData'}
+            headers: {'Content-Type': 'multipart/form-data'}
         }),
     
     update: (publicationId: number, formData: FormData ) => 
         api.put(`/publications/${publicationId}`, formData, {
-            headers: {'Content-Type': 'multipart/form-Data'}
+            headers: {'Content-Type': 'multipart/form-data'}
         }),
     
     delete: (publicationId: number) => 

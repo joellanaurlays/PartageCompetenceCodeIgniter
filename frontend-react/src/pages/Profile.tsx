@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, CircularProgress, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import LeftMenu from '../components/Layout/LeftMenu';
 import RightPanel from '../components/Layout/RightPanel';
@@ -43,9 +43,6 @@ const EMPTY_STATE_SX = {
 
 const Profil: React.FC = () => {
     const navigate = useNavigate();
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    
     const [loading, setLoading] = useState(true);
     const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(null);
     const [publications, setPublications] = useState<Publication[]>([]);

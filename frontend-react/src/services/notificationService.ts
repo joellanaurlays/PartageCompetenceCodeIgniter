@@ -14,8 +14,8 @@ export interface Notification {
 }
 
 export const notificationService = {
-    getAll: () => api.get<Notification[]>('/notifications'),
-    getNonLuCount: () => api.get<{ count: number }>('/notifications/non-lu/count'),
+    getAll: () => api.get<Notification[]>('/notifications', { params: { utilisateur_id: sessionStorage.getItem('userId') } }),
+    getNonLuCount: () => api.get<{ count: number }>('/notifications/non-lu/count', { params: { utilisateur_id: sessionStorage.getItem('userId') } }),
     marquerCommeLu: (notificationId: number) => api.put(`/notifications/${notificationId}/lu`),
-    marquerToutLu: () => api.put('/notifications/lu/tout')
+    marquerToutLu: () => api.put('/notifications/lu/tout', null, { params: { utilisateur_id: sessionStorage.getItem('userId') } })
 };

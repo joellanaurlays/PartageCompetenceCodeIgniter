@@ -117,12 +117,6 @@ const RightPanel: React.FC<RightPanelProps> = ({ userId, onPublicationCreated, d
         }
     };
 
-    const resetForm = () => {
-        setContenu('');
-        setPhoto(null);
-        setPreview(null);
-    };
-
     return (
         <Box sx={RIGHT_PANEL_SX}>
             <form onSubmit={handleSubmit} style={FORM_STYLE}>

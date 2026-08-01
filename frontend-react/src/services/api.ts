@@ -1,11 +1,13 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8080/api',
+    // En développement, le proxy CRA transmet /api à CodeIgniter. Pour un
+    // déploiement séparé, définir REACT_APP_API_URL (ex. https://api.example.com/api).
+    baseURL: process.env.REACT_APP_API_URL || '/api',
     headers: {
         'Content-Type': 'application/json',
     },
-    withCredentials: true,
+    withCredentials: false,
 });
 
 // Intercepteur afin de gérer les erreurs
