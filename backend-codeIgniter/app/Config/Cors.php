@@ -26,79 +26,44 @@ class Cors extends BaseConfig
      */
     public array $default = [
         /**
-         * Origins for the `Access-Control-Allow-Origin` header.
+         * Origines autorisées pour l'en-tête `Access-Control-Allow-Origin`.
+         * Ajoutez ici l'URL de votre frontend React.
          *
-         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
-         *
-         * E.g.:
-         *   - ['http://localhost:8080']
-         *   - ['https://www.example.com']
+         * E.g.: Create React App -> http://localhost:3000
+         *       Vite             -> http://localhost:5173
          */
-        'allowedOrigins' => [],
+        'allowedOrigins' => [
+            'http://localhost:3000',
+            'http://localhost:5173',
+        ],
 
         /**
          * Origin regex patterns for the `Access-Control-Allow-Origin` header.
-         *
-         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
-         *
-         * NOTE: A pattern specified here is part of a regular expression. It will
-         *       be actually `#\A<pattern>\z#`.
-         *
-         * E.g.:
-         *   - ['https://\w+\.example\.com']
          */
         'allowedOriginsPatterns' => [],
 
         /**
-         * Weather to send the `Access-Control-Allow-Credentials` header.
-         *
-         * The Access-Control-Allow-Credentials response header tells browsers whether
-         * the server allows cross-origin HTTP requests to include credentials.
-         *
-         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
+         * Autorise l'envoi de cookies / headers Authorization en cross-origin.
          */
-        'supportsCredentials' => false,
+        'supportsCredentials' => true,
 
         /**
-         * Set headers to allow.
-         *
-         * The Access-Control-Allow-Headers response header is used in response to
-         * a preflight request which includes the Access-Control-Request-Headers to
-         * indicate which HTTP headers can be used during the actual request.
-         *
-         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
+         * Headers autorisés dans les requêtes du frontend.
          */
-        'allowedHeaders' => [],
+        'allowedHeaders' => ['Content-Type', 'Authorization', 'X-Requested-With'],
 
         /**
-         * Set headers to expose.
-         *
-         * The Access-Control-Expose-Headers response header allows a server to
-         * indicate which response headers should be made available to scripts running
-         * in the browser, in response to a cross-origin request.
-         *
-         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
+         * Headers exposés au frontend dans la réponse.
          */
         'exposedHeaders' => [],
 
         /**
-         * Set methods to allow.
-         *
-         * The Access-Control-Allow-Methods response header specifies one or more
-         * methods allowed when accessing a resource in response to a preflight
-         * request.
-         *
-         * E.g.:
-         *   - ['GET', 'POST', 'PUT', 'DELETE']
-         *
-         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
+         * Méthodes HTTP autorisées.
          */
-        'allowedMethods' => [],
+        'allowedMethods' => ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 
         /**
-         * Set how many seconds the results of a preflight request can be cached.
-         *
-         * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
+         * Durée de mise en cache du preflight (en secondes).
          */
         'maxAge' => 7200,
     ];
