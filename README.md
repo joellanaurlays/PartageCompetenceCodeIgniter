@@ -14,3 +14,5 @@ PostgreSQL : sharing_db
 # Technologie
 CodeIgniter : backend
 React : frontend
+
+Il faut changer configuration de postgresql dans .env
