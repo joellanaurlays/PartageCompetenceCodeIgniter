@@ -9,7 +9,7 @@ RG4 : Un utilisateur peut liker plusieurs publication qu'une seul fois.
 RG5 : Après un like ou une commentaire, l'utilisateur propriétaire de la publication reçevera une notification
 
 # Base de données utiliser
-PostgreSQL
+PostgreSQL : sharing_db
 
 # Technologie
 CodeIgniter : backend
