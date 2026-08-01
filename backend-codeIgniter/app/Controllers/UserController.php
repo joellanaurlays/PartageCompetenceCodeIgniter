@@ -41,8 +41,7 @@ class UserController extends BaseController
         return $this->respond($user);
     }
 
-    // POST /api/users
-    public function create()
+    public function register()
     {
         $data = $this->request->getJSON(true);
         
@@ -50,10 +49,15 @@ class UserController extends BaseController
             return $this->failValidationErrors($this->userModel->errors());
         }
 
-        $user = $this->userModel->find($this->userModel->getInsertID());
-        unset($user['mot_de_passe']);
-        
-        return $this->respondCreated($user);
+        $id = (int) $this->userModel->getInsertID();
+        $user = $this->userModel->find($id);
+        return $this->respondCreated([
+            'message' => 'Inscription réussie',
+            'utilisateurId' => $id,
+            'pseudo' => $user['pseudo'],
+            'email' => $user['email'],
+            'photo_profil' => $user['photo_profil'],
+        ]);
     }
 
     // PUT /api/users/{id}
@@ -63,7 +67,7 @@ class UserController extends BaseController
             return $this->failValidationErrors('ID utilisateur requis');
         }
 
-        $data = $this->request->getJSON(true);
+        $data = $this->request->getJSON(true) ?? [];
         $data['id'] = $id;
 
         if (!$this->userModel->save($data)) {
@@ -131,13 +135,58 @@ class UserController extends BaseController
             return $this->failUnauthorized('Identifiants invalides');
         }
 
-        unset($user['mot_de_passe']);
-        
-        // À ajouter : création de token JWT si nécessaire
         return $this->respond([
             'message' => 'Connexion réussie',
-            'user' => $user,
-            'token' => 'votre_token_jwt_ici' // À implémenter
+            'utilisateurId' => (int) $user['id'],
+            'pseudo' => $user['pseudo'],
+            'email' => $user['email'],
+            'photo_profil' => $user['photo_profil'],
         ]);
+    }
+
+    public function logout()
+    {
+        return $this->respond(['message' => 'Déconnexion réussie']);
+    }
+
+    public function updatePhoto($id = null)
+    {
+        if ($id === null || !$this->userModel->find($id)) {
+            return $this->failNotFound('Utilisateur non trouvé');
+        }
+
+        $photo = $this->request->getFile('photo_profil');
+        if ($photo === null || !$photo->isValid()) {
+            return $this->failValidationErrors('Une image de profil valide est requise');
+        }
+
+        $name = $photo->getRandomName();
+        if (!is_dir(FCPATH . 'uploads/profils')) {
+            mkdir(FCPATH . 'uploads/profils', 0775, true);
+        }
+        $photo->move(FCPATH . 'uploads/profils', $name);
+        $path = '/uploads/profils/' . $name;
+        $this->userModel->update($id, ['photo_profil' => $path]);
+
+        return $this->respond(['message' => 'Photo de profil modifiée', 'photo_profil' => $path]);
+    }
+
+    public function changePassword()
+    {
+        $data = $this->request->getJSON(true) ?? [];
+        $email = $data['email'] ?? '';
+        $password = $data['nouveauMotDePasse'] ?? '';
+        if ($password === '' || $password !== ($data['confirmationMotDePasse'] ?? null)) {
+            return $this->failValidationErrors('Les mots de passe ne correspondent pas');
+        }
+        if (strlen($password) < 8) {
+            return $this->failValidationErrors('Le mot de passe doit contenir au moins 8 caractères');
+        }
+        $user = $this->userModel->where('email', $email)->first();
+        if (!$user) {
+            return $this->failNotFound('Utilisateur non trouvé');
+        }
+        $this->userModel->update($user['id'], ['mot_de_passe' => $password]);
+        return $this->respond(['message' => 'Mot de passe modifié avec succès']);
     }
 }
